@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Register POS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        .total, .actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+        button {
+            margin: 5px 0;
+            width: 100%;
+        }
+        .items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .items button {
+            flex: 1 1 30%;
+            margin: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cash Register POS</h2>
+        <div class="items" id="items">
+            <!-- Generate 32 items for the POS -->
+            <script>
+                for (let i = 1; i <= 32; i++) {
+                    document.write(`
+                        <button onclick="addItem(${i})">Item ${i}</button>
+                    `);
+                }
+            </script>
+        </div>
+        <div class="total">
+            <h3>Total: $<span id="total">0.00</span></h3>
+        </div>
+        <div class="actions">
+            <button onclick="applyDiscount()">Apply 10% Discount</button>
+            <button onclick="copyOrder()">Copy Order</button>
+            <button onclick="clearOrder()">Clear Order</button>
+        </div>
+    </div>
+
+    <script>
+        const prices = Array(32).fill().map((_, i) => (i + 1) * 1.5); // Example prices for items
+        const order = Array(32).fill(0); // Initialize order quantities for each item
+
+        function addItem(index) {
+            order[index - 1]++;
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            for (let i = 0; i < 32; i++) {
+                total += order[i] * prices[i];
+            }
+            document.getElementById('total').innerText = total.toFixed(2);
+        }
+
+        function applyDiscount() {
+            let total = parseFloat(document.getElementById('total').innerText);
+            total *= 0.9;
+            document.getElementById('total').innerText = total.toFixed(2);
+        }
+
+        function copyOrder() {
+            let orderText = 'Order Summary:\n';
+            for (let i = 0; i < 32; i++) {
+                if (order[i] > 0) {
+                    orderText += `Item ${i + 1}: ${order[i]} x $${prices[i].toFixed(2)}\n`;
+                }
+            }
+            orderText += `Total: $${document.getElementById('total').innerText}`;
+            navigator.clipboard.writeText(orderText).then(() => {
+                alert('Order copied to clipboard!');
+            });
+        }
+
+        function clearOrder() {
+            for (let i = 0; i < 32; i++) {
+                order[i] = 0;
+            }
+            document.getElementById('total').innerText = '0.00';
+        }
+    </script>
+</body>
+</html>
